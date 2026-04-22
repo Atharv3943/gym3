@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String         @id @default(uuid())
+  name             String
+  email            String         @unique
+  password         String
+  role             String         @default("student")
+  department       String?
+  membershipStatus String         @default("inactive")
+  membershipExpiry DateTime?
+  createdAt        DateTime       @default(now())
+  bookings         Booking[]
+  progress         Progress[]
+}
+
+model Booking {
+  id       String   @id @default(uuid())
+  userId   String
+  slotTime String
+  date     DateTime
+  status   String   @default("active")
+  user     User     @relation(fields: [userId], references: [id])
+}
+
+model Announcement {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+}
+
+model Progress {
+  id      String   @id @default(uuid())
+  userId  String
+  weight  Float
+  date    DateTime
+  user    User     @relation(fields: [userId], references: [id])
+}
+
+model Settings {
+  id           String   @id @default("config")
+  aboutText    String?
+  timings      String?
+  contactPhone String?
+  contactEmail String?
+  address      String?
+  updatedAt    DateTime @updatedAt
+}
+
+model FacilityBase {
+  id          String @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String
+  order       Int    @default(0)
+}
+
+model GalleryItem {
+  id       String @id @default(uuid())
+  imageUrl String
+  caption  String?
+  category String @default("general")
+}
+
